@@ -1,0 +1,75 @@
+# Project Workflow Overview
+
+This document walks through the end-to-end flow of a typical **signup** request as it travels through the code-base.  The same layering pattern (Controller → Use-case → Repository → Mapper → Model) is reused for every feature, so understanding this path should help you navigate any other API.
+
+---
+
+1. HTTP Layer – **Controller** (`src/controllers/account.controller.ts`)
+   • Exposes REST endpoints (`POST /account/signup`, `POST /account/login`).
+   • Receives a DTO object (`CreateAccountDto`).
+   • Delegates work to the **AccountUseCase**.
+
+2. Application Layer – **Use-case** (`src/use-cases/account/account.use-case.ts`)
+   • Contains business rules; orchestrates multiple repositories.
+   • `register()` workflow:
+     1. `accountRepo.findByEmail()` – guard against duplicates.
+     2. Generates salt + hashed password.
+     3. Builds a **domain entity** – `Account.create({...})` (pure TS class, no DB code).
+     4. Persists it: `accountRepo.create(account)`.
+     5. Builds + saves initial **PlayerData** (game stats) via `playerDataRepo.create(...)`.
+     6. Returns a result object consumed by the controller.
+
+3. Domain Layer – **Entities** (`src/core/domain/entities/*.entity.ts`)
+   • Immutable business objects (e.g. `Account`, `PlayerData`).
+   • Encapsulate invariants & convenience getters.
+   • They exist only in memory; they are **not** Mongoose documents.
+
+4. Data Access Layer – **Repository Interfaces** (`src/core/repositories/*`) & **Implementations** (`src/infrastructure/repository/*`)
+   • Interfaces define CRUD signatures used by use-cases.
+   • Implementations use Mongoose models to touch MongoDB.
+   • Example: `AccountRepositoryImpl.create(account)`
+     1. Converts the **domain entity** → **persistence object** using a **Mapper**.
+     2. Calls `accountModel.create()` (Mongoose).
+     3. Converts the created doc back → **domain entity** so upper layers stay DB-agnostic.
+
+5. Mapping Layer – **Mappers** (`src/core/domain/mappers/*`)
+   • Purpose: bridge clean-architecture domain objects with DB schemas.
+   • Two functions:
+     • `toDomain(rawDocument)` – wraps a Mongo document into a domain entity.
+     • `toPersistence(entity)`  – strips methods/extra props; returns plain object that matches the Mongoose schema (no manual `id`, relies on Mongo `_id`).
+
+6. Infrastructure Layer – **Mongoose Models** (`src/frameworks/data-services/mongo/model/*.model.ts`)
+   • Decorated with `@Schema()`/`@Prop()`.
+   • Represent actual collections (e.g. `accounts`, `playerdatas`).
+   • MongoDB auto-generates `_id`; we no longer maintain a custom `id` column.
+
+7. Additional Flow Notes
+   • **Password Utilities** in `shared/utils/auth.utils.ts` hash and validate passwords.
+   • **DTOs** (in `shared/dtos`) define the request/response shapes.
+   • **Error Handling** – Controllers rely on NestJS exception filters; repositories surface DB validation errors which bubble to the controller.
+
+8. Sequence Diagram (textual)
+
+```
+Client → Controller (HTTP POST /account/signup)
+Controller → UseCase.register(dto)
+UseCase → AccountRepository.findByEmail(email)
+UseCase ← AccountRepository (null | existing)
+UseCase → PasswordUtil.generateSaltAndHash()
+UseCase → AccountRepository.create(accountEntity)
+  AccountRepository → Mapper.toPersistence(entity)
+  AccountRepository → MongooseModel.create(persistence)
+  MongoDB ← MongooseModel (document w/ _id)
+  AccountRepository ← createdDocument
+  AccountRepository → Mapper.toDomain(createdDocument)
+UseCase ← AccountRepository (accountEntity with id = _id)
+UseCase → PlayerDataRepository.create(playerDataEntity(accountId = account._id))
+  PlayerDataRepository uses PlayerDataMapper similarly
+UseCase ← PlayerDataRepository (playerDataEntity)
+UseCase → Controller (AccountResult)
+Controller → Client (HTTP 201 JSON)
+```
+
+---
+
+Keep this file handy while exploring the code – jumping to the layer you need becomes much faster once you know the overall route.
