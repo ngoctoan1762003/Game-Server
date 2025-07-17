@@ -19,7 +19,11 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Create .env file
-        run: echo "${{ secrets.ENV }}" | base64 -d > .env
+        run: |
+          cat <<EOF > .env
+          ${{ secrets.ENV }}
+          EOF
+          cat .env
 
       - name: Build Docker image
         run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/server:latest .
