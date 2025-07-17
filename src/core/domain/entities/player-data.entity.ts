@@ -1,6 +1,5 @@
 import { Entity } from '@/core/base/entity';
 import { UnitOwned } from '@/core/domain/interface/unit-owned.interface';
-import { UnitSquadSetup } from '@/core/domain/interface/unit-squad.interface';
 
 export interface PlayerDataProps {
   id: string;

@@ -7,6 +7,11 @@ import { UpdateUnitSetupDto } from '@/shared/dtos/player-data/update-unit-setup.
 
 @Injectable()
 export class PlayerDataUseCase {
+    async getPlayerData(accountId: string) {
+        const pd = await this.playerRepo.findByAccountId(accountId);
+        if (!pd) throw new NotFoundException('PlayerData not found');
+        return pd;
+    }
     constructor(private readonly playerRepo: PlayerDataRepositoryImpl) { }
 
     async addClearedChapter(accountId: string, dto: AddClearedChapterDto) {

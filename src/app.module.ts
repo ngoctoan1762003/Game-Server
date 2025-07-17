@@ -6,6 +6,8 @@ import { AccountController } from './controllers/account.controller';
 import { AccountUseCasesModule } from './use-cases/account/account-use-cases.module';
 import { PlayerDataController } from './controllers/player-data.controller';
 import { PlayerDataUseCasesModule } from './use-cases/player-data/player-data.use-case.module';
+import { InventoryController } from './controllers/inventory.controller';
+import { InventoryUseCasesModule } from './use-cases/inventory/inventory.use-case.module';
 
 @Module({
     imports: [
@@ -23,7 +25,8 @@ import { PlayerDataUseCasesModule } from './use-cases/player-data/player-data.us
         }),
         AccountUseCasesModule,
         PlayerDataUseCasesModule,
+        InventoryUseCasesModule,
     ],
-    controllers: [AccountController, PlayerDataController],
+    controllers: [AccountController, PlayerDataController, InventoryController],
 })
 export class AppModule {}

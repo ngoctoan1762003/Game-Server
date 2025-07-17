@@ -1,4 +1,4 @@
-import { Controller, Post, Param, Body } from '@nestjs/common';
+import { Controller, Post, Get, Param, Body } from '@nestjs/common';
 import { PlayerDataUseCase } from '@/use-cases/player-data/player-data.use-case';
 import { AddClearedChapterDto } from '@/shared/dtos/player-data/add-cleared-chapter.dto';
 import { AddClearedStageDto } from '@/shared/dtos/player-data/add-cleared-stage.dto';
@@ -7,6 +7,10 @@ import { UpdateUnitSetupDto } from '@/shared/dtos/player-data/update-unit-setup.
 
 @Controller('player-data')
 export class PlayerDataController {
+  @Get(':accountId')
+  async getPlayerData(@Param('accountId') accountId: string) {
+    return this.useCase.getPlayerData(accountId);
+  }
   constructor(private readonly useCase: PlayerDataUseCase) {}
 
   @Post(':accountId/cleared-chapter')
