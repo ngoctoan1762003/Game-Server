@@ -1,0 +1,9 @@
+node_modules
+dist
+test
+.dockerignore
+Dockerfile
+.env
+README.md
+workflow.txt
+nest-cli.jsons
