@@ -19,7 +19,6 @@ export class Account extends Entity<AccountProps> {
   }
 
   static create(props: AccountProps): Account {
-    console.log("props: ", props);
     return new Account({
       ...props,
       created_at: props.created_at || new Date(),

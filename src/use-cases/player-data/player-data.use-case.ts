@@ -10,7 +10,13 @@ export class PlayerDataUseCase {
     async getPlayerData(accountId: string) {
         const pd = await this.playerRepo.findByAccountId(accountId);
         if (!pd) throw new NotFoundException('PlayerData not found');
-        return pd;
+        return {
+            clearedStageData: pd.clearedStageData,
+            clearedChapterData: pd.clearedChapterData,
+            currentStageData: pd.currentStageData,
+            ownedUnits: pd.ownedUnits,
+            listUnitSquadSetup: pd.listUnitSquadSetup,
+        };
     }
     constructor(private readonly playerRepo: PlayerDataRepositoryImpl) { }
 
@@ -22,7 +28,7 @@ export class PlayerDataUseCase {
             pd.clearedChapterData.push(dto.chapterId);
             await this.playerRepo.update(pd.id, pd);
         }
-        return pd;
+        return { success: true, message: 'OK' };
     }
 
     async addClearedStage(accountId: string, dto: AddClearedStageDto) {
@@ -41,7 +47,7 @@ export class PlayerDataUseCase {
             pd.currentStageData.push(dto.nextStageId);
         }
         await this.playerRepo.update(pd.id, pd);
-        return pd;
+        return { success: true, message: 'OK' };
     }
 
     async updateOwnedUnit(accountId: string, dto: UpdateOwnedUnitDto) {
@@ -60,7 +66,7 @@ export class PlayerDataUseCase {
             unit.currentExp = dto.currentExp;
         }
         await this.playerRepo.update(pd.id, pd);
-        return pd;
+        return { success: true, message: 'OK' };
     }
 
     async updateUnitSetup(accountId: string, dto: UpdateUnitSetupDto) {
@@ -79,6 +85,6 @@ export class PlayerDataUseCase {
 
         pd.listUnitSquadSetup[dto.slotIndex] = dict;
         await this.playerRepo.update(pd.id, pd);
-        return pd;
+        return { success: true, message: 'OK' };
     }
 }

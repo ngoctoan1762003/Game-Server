@@ -1,9 +1,12 @@
 import { Account } from '@/core/domain/entities/account.entity';
 import { PlayerData } from '@/core/domain/entities/player-data.entity';
+import { Inventory } from '@/core/domain/entities/inventory.entity';
 import { AccountRepositoryImpl } from '@/infrastructure/repository/account.repository.impl';
 import { PlayerDataRepositoryImpl } from '@/infrastructure/repository/player-data.repository.impl';
+import { InventoryRepositoryImpl } from '@/infrastructure/repository/inventory.repository.impl';
 import { generateSaltAndHash, validatePassword } from '@/shared/utils/auth.utils';
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 interface RegisterInput {
   email: string;
@@ -18,14 +21,22 @@ interface LoginInput {
 export interface AccountResult {
   success: boolean;
   message: string;
+  // For register response
   user?: Account;
+  // For login response
+  username?: string;
+  email?: string;
+  image?: string;
+  accessToken?: string;
 }
 
 @Injectable()
 export class AccountUseCase {
   constructor(
     private readonly accountRepo: AccountRepositoryImpl,
-    private readonly playerDataRepo: PlayerDataRepositoryImpl
+    private readonly playerDataRepo: PlayerDataRepositoryImpl,
+    private readonly inventoryRepo: InventoryRepositoryImpl,
+    private readonly jwtService: JwtService
   ) {}
 
   async register(input: RegisterInput): Promise<AccountResult> {
@@ -68,6 +79,9 @@ export class AccountUseCase {
 
     await this.playerDataRepo.create(playerData);
 
+    const inventory = Inventory.create({ id: '', accountId: savedAccount._id, items: [] });
+    await this.inventoryRepo.create(inventory);
+
     return {
       success: true,
       message: 'Account created successfully',
@@ -92,10 +106,25 @@ export class AccountUseCase {
       };
     }
 
+    // Generate access token containing only userId
+    const accessToken = this.jwtService.sign(
+      { userId: account._id },
+      {
+        secret: process.env.JWT_SECRET,
+        expiresIn: '1y',
+      }
+    );
+    
+    // Derive username (before @) or use email if parsing fails
+    const username = account.email.split('@')[0] || account.email;
+
     return {
       success: true,
       message: 'Login successful',
-      user: account,
+      username,
+      email: account.email,
+      image: account.image,
+      accessToken,
     };
   }
 }

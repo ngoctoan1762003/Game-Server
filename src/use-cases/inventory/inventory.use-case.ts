@@ -7,10 +7,10 @@ import { Inventory } from '@/core/domain/entities/inventory.entity';
 export class InventoryUseCase {
   constructor(private readonly inventoryRepo: InventoryRepositoryImpl) {}
 
-  async getInventory(accountId: string): Promise<Inventory> {
+  async getInventory(accountId: string) {
     const inv = await this.inventoryRepo.findByAccountId(accountId);
     if (!inv) throw new NotFoundException('Inventory not found');
-    return inv;
+    return { items: inv.items };
   }
 
   async addOrUpdateItems(accountId: string, dto: AddInventoryItemsDto) {
@@ -27,15 +27,17 @@ export class InventoryUseCase {
       });
     });
     if (!inv.id) {
-      return this.inventoryRepo.create(inv);
+      await this.inventoryRepo.create(inv);
+    } else {
+      await this.inventoryRepo.update(inv.id, inv);
     }
-    return this.inventoryRepo.update(inv.id, inv);
+    return { success: true, message: 'OK' };
   }
 
   async removeItem(accountId: string, itemId: string) {
     const inv = await this.inventoryRepo.findByAccountId(accountId);
     if (!inv) throw new NotFoundException('Inventory not found');
     inv.removeItem(itemId);
-    return this.inventoryRepo.update(inv.id, inv);
+    await this.inventoryRepo.update(inv.id, inv);
   }
 }

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -28,5 +29,6 @@ import { InventoryUseCasesModule } from './use-cases/inventory/inventory.use-cas
         InventoryUseCasesModule,
     ],
     controllers: [AccountController, PlayerDataController, InventoryController],
+  providers: [JwtAuthGuard],
 })
 export class AppModule {}

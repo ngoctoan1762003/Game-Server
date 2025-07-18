@@ -1,21 +1,26 @@
-import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Request } from 'express';
+import { JwtAuthGuard } from '@/common/guard/jwt-auth.guard';
 import { InventoryUseCase } from '@/use-cases/inventory/inventory.use-case';
 import { AddInventoryItemsDto } from '@/shared/dtos/inventory/add-inventory-items.dto';
 
-@Controller('player-data/:accountId/inventory')
+@Controller('inventory')
+@UseGuards(JwtAuthGuard)
 export class InventoryController {
   constructor(private readonly useCase: InventoryUseCase) {}
 
   @Get()
-  async getInventory(@Param('accountId') accountId: string) {
+  async getInventory(@Req() req: Request) {
+    const accountId = (req as any).user.userId;
     return this.useCase.getInventory(accountId);
   }
 
   @Post()
   async addOrUpdate(
-    @Param('accountId') accountId: string,
+    @Req() req: Request,
     @Body() dto: AddInventoryItemsDto,
   ) {
+    const accountId = (req as any).user.userId;
     return this.useCase.addOrUpdateItems(accountId, dto);
   }
 }
