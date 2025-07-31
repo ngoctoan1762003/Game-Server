@@ -19,6 +19,7 @@ export class PlayerData{
         unitID: string;
         level: number;
         currentExp: number;
+        tier: number;
     }[];
     @Prop()
     listUnitSquadSetup: [[{

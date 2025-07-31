@@ -24,7 +24,7 @@ export class PlayerDataController {
   ) {
     const accountId = (req as any).user.userId;
     return this.useCase.addClearedChapter(accountId, dto);
-  }
+  }  
 
   @Post('cleared-stage')
   async addClearedStage(
@@ -35,7 +35,20 @@ export class PlayerDataController {
     return this.useCase.addClearedStage(accountId, dto);
   }
 
-  @Post('owned-unit')
+  @Get('gacha-roll')
+  async gachaRoll(@Req() req: Request) {
+    const accountId = (req as any).user.userId;
+    return this.useCase.rollGacha(accountId);
+  }
+
+  @Get('gacha-roll-multi')
+  async gachaRollMulti(@Req() req: Request, @Body() dto: any) {
+    const accountId = (req as any).user.userId;
+    const times = dto?.times ?? 10;
+    return this.useCase.rollGachaMultiple(accountId, times);
+  }
+
+  @Post('owned-unit') 
   async updateOwnedUnit(
     @Req() req: Request,
     @Body() dto: UpdateOwnedUnitDto,
@@ -49,6 +62,7 @@ export class PlayerDataController {
     @Req() req: Request,
     @Body() dto: UpdateUnitSetupDto,
   ) {
+    console.log(dto);
     const accountId = (req as any).user.userId;
     return this.useCase.updateUnitSetup(accountId, dto);
   }

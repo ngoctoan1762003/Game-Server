@@ -9,4 +9,7 @@ export class UpdateOwnedUnitDto {
 
   @IsNumber()
   currentExp: number;
+
+  @IsNumber()
+  tier: number;
 }
