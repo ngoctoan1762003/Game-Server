@@ -73,7 +73,8 @@ export class AccountUseCase {
       clearedStageData: [],
       clearedChapterData: [],
       currentStageData: [],
-      ownedUnits: [],
+      // Initialize with default starter unit UE001
+      ownedUnits: [{ unitID: 'UE001', level: 1, currentExp: 0, tier: 0 }],
       listUnitSquadSetup: Array(10).fill({}),
     });
 
