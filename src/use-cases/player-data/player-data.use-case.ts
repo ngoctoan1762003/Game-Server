@@ -54,9 +54,6 @@ export class PlayerDataUseCase {
             pd.currentStageData.splice(pd.currentStageData.indexOf(dto.stageId), 1);
         }
 
-        if (dto.nextStageId !== "" && !pd.currentStageData.includes(dto.nextStageId)) {
-            pd.currentStageData.push(dto.nextStageId);
-        }
         await this.playerRepo.update(pd.id, pd);
         return { success: true, message: 'OK' };
     }
