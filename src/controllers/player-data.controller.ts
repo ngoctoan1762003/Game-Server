@@ -6,6 +6,7 @@ import { AddClearedChapterDto } from '@/shared/dtos/player-data/add-cleared-chap
 import { AddClearedStageDto } from '@/shared/dtos/player-data/add-cleared-stage.dto';
 import { UpdateOwnedUnitDto } from '@/shared/dtos/player-data/update-owned-unit.dto';
 import { UpdateUnitSetupDto } from '@/shared/dtos/player-data/update-unit-setup.dto';
+import { AddCompletedTutorialDto } from '@/shared/dtos/player-data/add-completed-tutorial.dto';
 
 @Controller('player-data')
 @UseGuards(JwtAuthGuard)
@@ -55,6 +56,15 @@ export class PlayerDataController {
   ) {
     const accountId = (req as any).user.userId;
     return this.useCase.updateOwnedUnit(accountId, dto);
+  }
+
+  @Post('completed-tutorial')
+  async addCompletedTutorial(
+    @Req() req: Request,
+    @Body() dto: AddCompletedTutorialDto,
+  ) {
+    const accountId = (req as any).user.userId;
+    return this.useCase.addCompletedTutorial(accountId, dto);
   }
 
   @Post('unit-setup')

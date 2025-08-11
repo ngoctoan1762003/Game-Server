@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PlayerDataRepositoryImpl } from '@/infrastructure/repository/player-data.repository.impl';
 import { AddClearedChapterDto } from '@/shared/dtos/player-data/add-cleared-chapter.dto';
 import { AddClearedStageDto } from '@/shared/dtos/player-data/add-cleared-stage.dto';
+import { AddCompletedTutorialDto } from '@/shared/dtos/player-data/add-completed-tutorial.dto';
 import { UpdateOwnedUnitDto } from '@/shared/dtos/player-data/update-owned-unit.dto';
 import { UpdateUnitSetupDto } from '@/shared/dtos/player-data/update-unit-setup.dto';
 import { UNIT_POOL } from '@/shared/data/unit-pool';
@@ -16,8 +17,8 @@ export class PlayerDataUseCase {
         return {
             clearedStageData: pd.clearedStageData,
             clearedChapterData: pd.clearedChapterData,
-            currentStageData: pd.currentStageData,
             ownedUnits: pd.ownedUnits,
+            completedTutorialIds: pd.completedTutorialIds,
             listUnitSquadSetup: pd.listUnitSquadSetup.map(slot =>
                 Object.entries(slot).map(([unitID, pos]: [string, { x: number; y: number }]) => ({
                     unitID,
@@ -50,11 +51,18 @@ export class PlayerDataUseCase {
             pd.clearedStageData.push(dto.stageId);
         }
 
-        if (pd.currentStageData.includes(dto.stageId)) {
-            pd.currentStageData.splice(pd.currentStageData.indexOf(dto.stageId), 1);
-        }
-
         await this.playerRepo.update(pd.id, pd);
+        return { success: true, message: 'OK' };
+    }
+
+    async addCompletedTutorial(accountId: string, dto: AddCompletedTutorialDto) {
+        const pd = await this.playerRepo.findByAccountId(accountId);
+        if (!pd) throw new NotFoundException('PlayerData not found');
+
+        if (!pd.completedTutorialIds.includes(dto.tutorialId)) {
+            pd.completedTutorialIds.push(dto.tutorialId);
+            await this.playerRepo.update(pd.id, pd);
+        }
         return { success: true, message: 'OK' };
     }
 

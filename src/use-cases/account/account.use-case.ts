@@ -72,7 +72,7 @@ export class AccountUseCase {
       nickname: input.email.split('@')[0],
       clearedStageData: [],
       clearedChapterData: [],
-      currentStageData: [],
+      completedTutorialIds: [],
       // Initialize with default starter unit UE001
       ownedUnits: [{ unitID: 'UE001', level: 1, currentExp: 0, tier: 0 }],
       listUnitSquadSetup: Array(10).fill({}),

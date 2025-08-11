@@ -9,7 +9,7 @@ export interface PlayerDataPersistence extends Document {
   nickname: string;
   clearedStageData: string[];
   clearedChapterData: string[];
-  currentStageData: string[];
+  completedTutorialIds: string[];
   ownedUnits: any[];
   listUnitSquadSetup: any[];
   createdAt: Date;
@@ -25,7 +25,7 @@ export class PlayerDataMapper implements Mapper<PlayerDataPersistence, PlayerDat
       nickname: doc.nickname,
       clearedStageData: doc.clearedStageData,
       clearedChapterData: doc.clearedChapterData,
-      currentStageData: doc.currentStageData,
+      completedTutorialIds: doc.completedTutorialIds,
       ownedUnits: doc.ownedUnits as any,
       listUnitSquadSetup: doc.listUnitSquadSetup as any[],
     });
@@ -39,7 +39,7 @@ export class PlayerDataMapper implements Mapper<PlayerDataPersistence, PlayerDat
       nickname: entity.nickname,
       clearedStageData: entity.clearedStageData,
       clearedChapterData: entity.clearedChapterData,
-      currentStageData: entity.currentStageData,
+      completedTutorialIds: entity.completedTutorialIds,
       ownedUnits: entity.ownedUnits as any[],
       listUnitSquadSetup: entity.listUnitSquadSetup as any[],
       createdAt: new Date(),

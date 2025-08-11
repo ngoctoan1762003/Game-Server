@@ -7,7 +7,7 @@ export interface PlayerDataProps {
   nickname: string;
   clearedStageData: string[];
   clearedChapterData: string[];
-  currentStageData: string[];
+  completedTutorialIds: string[];
   ownedUnits: UnitOwned[];
   listUnitSquadSetup: { [key: string]: { x: number; y: number; }; }[];
   createdAt: Date;
@@ -27,7 +27,7 @@ export class PlayerData extends Entity<PlayerDataProps> {
       ...props,
       clearedStageData: props.clearedStageData || [],
       clearedChapterData: props.clearedChapterData || [],
-      currentStageData: props.currentStageData || [],
+      completedTutorialIds: props.completedTutorialIds || [],
       ownedUnits: props.ownedUnits || [],
       listUnitSquadSetup,
       createdAt: new Date(),
@@ -54,8 +54,8 @@ export class PlayerData extends Entity<PlayerDataProps> {
     return this.props.clearedChapterData;
   }
 
-  get currentStageData(): string[] {
-    return this.props.currentStageData;
+  get completedTutorialIds(): string[] {
+    return this.props.completedTutorialIds;
   }
 
   get ownedUnits(): UnitOwned[] {

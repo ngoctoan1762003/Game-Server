@@ -13,8 +13,6 @@ export class PlayerData{
     @Prop()
     clearedChapterData: string[];
     @Prop()
-    currentStageData: string[];
-    @Prop()
     ownedUnits: {
         unitID: string;
         level: number;
@@ -27,6 +25,8 @@ export class PlayerData{
         positionX: number;
         positionY: number;
     }]];
+    @Prop() 
+    completedTutorialIds: string[]
 }
 
 export const PlayerDataSchema = SchemaFactory.createForClass(PlayerData)

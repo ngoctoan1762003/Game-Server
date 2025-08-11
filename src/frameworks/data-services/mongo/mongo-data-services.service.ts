@@ -53,7 +53,7 @@ export class MongoDataServices
       nickname: playerData.nickname,
       clearedStageData: playerData.clearedStageData,
       clearedChapterData: playerData.clearedChapterData,
-      currentStageData: playerData.currentStageData,
+      completedTutorialIds: playerData.completedTutorialIds,
       ownedUnits: playerData.ownedUnits,
       listUnitSquadSetup: playerData.listUnitSquadSetup.map(squad => transformUnitSquadSetup(squad)),
       id: '',
